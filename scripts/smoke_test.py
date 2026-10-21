@@ -31,7 +31,7 @@ def main():
         try:
             request("/api/cinema/")
             break
-        except URLError:
+        except (URLError, ConnectionError, TimeoutError):
             if attempt == 59:
                 raise
             time.sleep(1)
