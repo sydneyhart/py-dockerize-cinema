@@ -1,3 +1,4 @@
+import math
 import time
 
 from django.core.management.base import BaseCommand, CommandError
@@ -15,8 +16,11 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         timeout = options["timeout"]
         interval = options["interval"]
-        if timeout <= 0 or interval <= 0:
-            raise CommandError("Timeout and interval must be positive.")
+        if not all(
+            math.isfinite(value) and value > 0
+            for value in (timeout, interval)
+        ):
+            raise CommandError("Timeout and interval must be positive and finite.")
 
         self.stdout.write("Waiting for database...")
         deadline = time.monotonic() + timeout

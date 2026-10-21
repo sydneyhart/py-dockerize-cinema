@@ -51,6 +51,17 @@ class WaitForDatabaseTests(SimpleTestCase):
                     call_command("wait_for_db", stdout=self.output, **options)
         self.connection.cursor.assert_not_called()
 
+    def test_non_finite_retry_options_are_rejected(self):
+        for name in ("timeout", "interval"):
+            for value in (float("nan"), float("inf"), float("-inf")):
+                with self.subTest(name=name, value=value):
+                    with self.assertRaisesMessage(CommandError, "finite"):
+                        call_command(
+                            "wait_for_db", stdout=self.output,
+                            **{name: value},
+                        )
+        self.connection.cursor.assert_not_called()
+
     def test_unexpected_error_is_not_hidden(self):
         self.connection.cursor.side_effect = ValueError("invalid config")
         with self.assertRaisesMessage(ValueError, "invalid config"):
