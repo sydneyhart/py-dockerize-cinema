@@ -20,7 +20,9 @@ class Command(BaseCommand):
             math.isfinite(value) and value > 0
             for value in (timeout, interval)
         ):
-            raise CommandError("Timeout and interval must be positive and finite.")
+            raise CommandError(
+                "Timeout and interval must be positive and finite."
+            )
 
         self.stdout.write("Waiting for database...")
         deadline = time.monotonic() + timeout
